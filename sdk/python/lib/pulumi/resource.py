@@ -79,6 +79,11 @@ class ResourceOptions:
     to mark certain ouputs as a secrets on a per resource basis.
     """
 
+    id: Optional[str]
+    """
+    TODO(sean)
+    """
+
 
     def __init__(self,
                  parent: Optional['Resource'] = None,
@@ -89,7 +94,8 @@ class ResourceOptions:
                  delete_before_replace: Optional[bool] = None,
                  ignore_changes: Optional[List[str]] = None,
                  version: Optional[str] = None,
-                 additional_secret_outputs: Optional[List[str]] = None) -> None:
+                 additional_secret_outputs: Optional[List[str]] = None,
+                 id: Optional[str] = None) -> None:
         """
         :param Optional[Resource] parent: If provided, the currently-constructing resource should be the child of
                the provided parent resource.
@@ -106,6 +112,7 @@ class ResourceOptions:
                or replacements.
         :param Optional[List[string]] additional_secret_outputs: If provided, a list of output property names that should
                also be treated as secret.
+        :param Optional[str] id: TODO(sean)
         """
         self.parent = parent
         self.depends_on = depends_on
@@ -116,6 +123,7 @@ class ResourceOptions:
         self.ignore_changes = ignore_changes
         self.version = version
         self.additional_secret_outputs = additional_secret_outputs
+        self.id = id
 
         if depends_on is not None:
             for dep in depends_on:
