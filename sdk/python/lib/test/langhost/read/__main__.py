@@ -19,4 +19,9 @@ CustomResource("test:read:resource", "foo", {
     "c": {
         "nest": "baz"
     }
-}, opts=ResourceOptions(id="myresourceid"))
+}, opts=ResourceOptions(id="myresourceid", version="0.17.9"))
+
+parent = CustomResource("test:index:MyResource", "foo2")
+CustomResource("test:read:resource", "foo-with-parent", {
+    "state": "foo",
+}, opts=ResourceOptions(id="myresourceid2", version="0.17.9", parent=parent))
