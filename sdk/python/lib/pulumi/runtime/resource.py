@@ -173,7 +173,7 @@ def read_resource(res: 'Resource', ty: str, name: str, props: 'Inputs', opts: Op
             # Resolve the ID that we were given. Note that we are explicitly discarding the list of dependencies
             # returned to us from "serialize_property" (the second argument). This is because a "read" resource does
             # not actually have any dependencies at all in the cloud provider sense, because a read resource already
-            # exists. Therefore, we do not need to track this dependency.
+            # exists. We do not need to track this dependency.
             resolved_id = await rpc.serialize_property(opts.id, [])
             log.debug(f"read prepared: ty={ty}, name={name}, id={opts.id}")
 
@@ -191,8 +191,8 @@ def read_resource(res: 'Resource', ty: str, name: str, props: 'Inputs', opts: Op
                 properties=resolver.serialized_props,
                 dependencies=resolver.dependencies,
                 version=opts.version or "",
-                accepts_secrets=True,
-                additional_secret_outputs=additional_secret_outputs,
+                acceptSecrets=True,
+                additionalSecretOutputs=additional_secret_outputs,
             )
 
             def do_rpc_call():
@@ -225,8 +225,8 @@ def read_resource(res: 'Resource', ty: str, name: str, props: 'Inputs', opts: Op
 
         log.debug(f"resource read successful: ty={ty}, urn={resp.urn}")
         resolve_urn(resp.urn)
-        resolve_id(resp.id, True, None) # Read IDs are always known.
-        await rpc.resolve_outputs(res, props, resp.object, resolvers)
+        resolve_id(resolve_id, True, None) # Read IDs are always known.
+        await rpc.resolve_outputs(res, props, resp.properties, resolvers)
 
     asyncio.ensure_future(RPC_MANAGER.do_rpc("read resource", do_read)())
 
