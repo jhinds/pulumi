@@ -118,6 +118,7 @@ async def prepare_resource(res: 'Resource',
         property_dependencies
     )
 
+# pylint: disable=too-many-locals,too-many-statements
 def read_resource(res: 'Resource', ty: str, name: str, props: 'Inputs', opts: Optional['ResourceOptions']):
     if opts.id is None:
         raise Exception("Cannot read resource whose options are lacking an ID value")
@@ -184,13 +185,14 @@ def read_resource(res: 'Resource', ty: str, name: str, props: 'Inputs', opts: Op
             req = resource_pb2.ReadResourceRequest(
                 type=ty,
                 name=name,
-                id=resolve_id,
+                id=resolved_id,
                 parent=resolver.parent_urn,
                 provider=resolver.provider_ref,
                 properties=resolver.serialized_props,
                 dependencies=resolver.dependencies,
                 version=opts.version or "",
                 accepts_secrets=True,
+                additional_secret_outputs=additional_secret_outputs,
             )
 
             def do_rpc_call():
@@ -226,7 +228,7 @@ def read_resource(res: 'Resource', ty: str, name: str, props: 'Inputs', opts: Op
         resolve_id(resp.id, True, None) # Read IDs are always known.
         await rpc.resolve_outputs(res, props, resp.object, resolvers)
 
-    asyncio.ensure_future(RPC_MANAGER.do_rpc("read resource", do_register)())
+    asyncio.ensure_future(RPC_MANAGER.do_rpc("read resource", do_read)())
 
 # pylint: disable=too-many-locals,too-many-statements
 def register_resource(res: 'Resource', ty: str, name: str, custom: bool, props: 'Inputs', opts: Optional['ResourceOptions']):

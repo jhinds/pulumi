@@ -16,7 +16,7 @@
 from typing import Optional, List, Any, Mapping, TYPE_CHECKING
 
 from .runtime import known_types
-from .runtime.resource import register_resource, register_resource_outputs
+from .runtime.resource import register_resource, register_resource_outputs, read_resource
 from .runtime.settings import get_root_resource
 
 if TYPE_CHECKING:
@@ -84,7 +84,7 @@ class ResourceOptions:
     TODO(sean)
     """
 
-
+    # pylint: disable=redefined-builtin
     def __init__(self,
                  parent: Optional['Resource'] = None,
                  depends_on: Optional[List['Resource']] = None,
@@ -207,7 +207,14 @@ class Resource:
                 self._providers = {**self._providers, **providers}
 
         self._protect = bool(opts.protect)
-        register_resource(self, t, name, custom, props, opts)
+
+        if opts.id is not None:
+            # If this resource already exists, read its state rather than registering it anow.
+            if not custom:
+                raise Exception("Cannot read an existing resource unless it has a custom provider")
+            read_resource(self, t, name, props, opts)
+        else:
+            register_resource(self, t, name, custom, props, opts)
 
     def translate_output_property(self, prop: str) -> str:
         """
