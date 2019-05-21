@@ -30,7 +30,7 @@ class ReadTest(LanghostTest):
             "urn": self.make_urn(ty, name),
         }
 
-    def read_resource(self, ctx, ty, name, id, parent, state):
+    def read_resource(self, ctx, ty, name, id, parent, state, dependencies, provider, version):
         if name == "foo":
             self.assertDictEqual(state, {
                 "a": "bar",
@@ -41,6 +41,7 @@ class ReadTest(LanghostTest):
             })
             self.assertEqual(ty, "test:read:resource")
             self.assertEqual(id, "myresourceid")
+            self.assertEqual(version, "0.17.9")
         elif name == "foo-with-parent":
             self.assertDictEqual(state, {
                 "state": "foo",
@@ -48,6 +49,7 @@ class ReadTest(LanghostTest):
             self.assertEqual(ty, "test:read:resource")
             self.assertEqual(id, "myresourceid2")
             self.assertEqual(parent, self.make_urn("test:index:MyResource", "foo2"))
+            self.assertEqual(version, "0.17.9")
         return {
             "urn": self.make_urn(ty, name),
             "properties": state,
